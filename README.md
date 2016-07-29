@@ -1,0 +1,1 @@
+## Tago - Get Average, Minimum and Maximum value from a variable
