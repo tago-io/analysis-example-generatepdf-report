@@ -1,0 +1,26 @@
+{
+  "name": "analysis-example-avg_min_max",
+  "version": "1.0.0",
+  "description": "Get average, minimum and maximum value from a variable",
+  "main": "index.js",
+  "dependencies": {
+    "tago": "^2.0.12"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tago-io/analysis-example-avgMinMax.git"
+  },
+  "keywords": [
+    "tago"
+  ],
+  "author": "Tago LLC",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tago-io/analysis-example-avgMinMax/issues"
+  },
+  "homepage": "https://github.com/tago-io/analysis-example-avgMinMax#readme"
+}
