@@ -27,7 +27,7 @@ function run_analysis(context) {
             "unit": "F"
         };
 
-        my_device.insert(obj_to_save);
+        my_device.insert(obj_to_save).then(context.log("Temperature Minimum Updated"));
 
     }).catch(error => context.log(error)); //Just another way to get the error. Do exatcly same thing than the other above.
 
@@ -38,7 +38,7 @@ function run_analysis(context) {
             "value": result_array[0].value,
             "unit": "F"
         };
-        my_device.insert(obj_to_save);
+        my_device.insert(obj_to_save).then(context.log("Temperature Maximum Updated"));
 
     }).catch(context.log); //Pass context.log, it will print the error in the console so we can know that something is wrong.
 
@@ -59,7 +59,7 @@ function run_analysis(context) {
             "value": temperature_sum,
             "unit": "F"
         };
-        my_device.insert(obj_to_save);
+        my_device.insert(obj_to_save).then(context.log("Temperature Average Updated"));
     }).catch(context.log);
 
 
