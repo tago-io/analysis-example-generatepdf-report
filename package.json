@@ -4,7 +4,7 @@
   "description": "Get average, minimum and maximum value from a variable",
   "main": "index.js",
   "dependencies": {
-    "tago": "^4.2.13"
+    "tago": "^6.1.0"
   },
   "devDependencies": {},
   "scripts": {
