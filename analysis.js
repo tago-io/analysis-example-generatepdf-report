@@ -1,14 +1,20 @@
+/* 
+ * Analysis Example
+ * Minimum, maximum, and average
+ * 
+ * Get the minimum, maximum, and the average value of the variable temperature from your device,
+ * and save these values in new variables
+ * 
+ * Instructions
+ * To run this analysis you need to add a device token to the environment variables,
+ * To do that, go to your device, then token and copy your token.
+ * Go the the analysis, then environment variables, 
+ * type device_token on key, and paste your token on value
+*/
+
 const Analysis = require('tago/analysis');
 const Utils    = require('tago/utils');
 const Device   = require('tago/device');
-
-// To run this analysis you need to add a device token to the environment variables,
-// To do that, go to your device, then token and copy your token.
-// Go the the analysis, then environment variables, 
-// add a new one and type device_token on key, and paste your token on value
-
-// This analysis reads the minimum, maximum and average value of the variable "temperature"
-// then the analysis then saves this values in a new variable
 
 // The function myAnalysis will run when you execute your analysis
 async function myAnalysis(context) {
