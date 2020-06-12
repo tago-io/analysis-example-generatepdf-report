@@ -1,94 +1,114 @@
 /* 
  * Analysis Example
- * Minimum, maximum, and average
+ * Generate pdf report and send via email
  * 
- * Get the minimum, maximum, and the average value of the variable temperature from your device,
- * and save these values in new variables
+ * Get the variable temperature from your device and generate a pdf report to send via email
  * 
  * Instructions
- * To run this analysis you need to add a device token to the environment variables,
- * To do that, go to your device, then token and copy your token.
+ * To run this analysis you need to add a email to the environment variables,
  * Go the the analysis, then environment variables, 
- * type device_token on key, and paste your token on value
+ * type email on key, and insert your email on value
 */
 
 const Analysis = require('tago/analysis');
 const Utils    = require('tago/utils');
-const Device   = require('tago/device');
+const Service  = require('tago/services');
+const axios    = require('axios');
+const moment   = require('moment-timezone');
+
+const html = `<html>
+  <head>
+      <style>
+          body, html {
+              margin: 0;
+          }
+          table {
+              width: 100%;
+              border-collapse: collapse;
+          }
+          td {
+              border: 1px solid black;
+              padding: 5px;
+              padding-bottom: 25px;
+              font-style: italic;
+          }
+      </style>
+  </head>
+  <body>
+      <table>
+          <tr>
+              <td colspan="7">Issue date: ${moment().format('YYYY-MM-DD HH:mm:ss')}</td>
+          </tr>
+          <tr>
+              <td colspan="4">Start date: 2020-05-20 10:21:32</td>
+              <td colspan="3">Stop date: 2020-10-08 22:56:19</td>
+          </tr>
+          <tr>
+              <td colspan="4"> Report of the temperature</td>
+              <td colspan="3">Device Kitchen Oven 5</td>
+          </tr>
+          <tr>
+              <td>Counter</td>
+              <td>Temperature 1</td>
+              <td>Time</td>
+              <td>Date</td>
+              <td>Temperature 2</td>
+              <td>Time</td>
+              <td>Date</td>
+          </tr>
+
+          <tr>
+          <td>2</td>
+          <td>120</td>
+          <td>10:53:20</td>
+          <td>2020-06-10</td>
+          <td>137</td>
+          <td>10:53:20</td>
+          <td>2020-06-10</td>
+        </tr>
+
+    </tr>
+      </table>
+  </body>
+</html>`;
 
 // The function myAnalysis will run when you execute your analysis
 async function myAnalysis(context) {
   // reads the values from the environment and saves it in the variable env_vars
   const env_vars = Utils.env_to_obj(context.environment);
+  if (!env_vars.email) return context.log('email environment variable not found');
 
-  const device = new Device(env_vars.device_token);
-  // This is a filter to get the minimum value of the variable temperature in the last day
-  const minFilter = {
-    variable: 'temperature',
-    query: 'min',
-    start_date: '1 day',
+  const options = {
+    displayHeaderFooter: true,
+    footerTemplate: '<div class="page-footer" style="width:100%; text-align:center; font-size:12px;">Page <span class="pageNumber"></span> of <span class="totalPages"></span></div>',
+    margin: {
+      top: '1.5cm',
+      right: '1.5cm',
+      left: '1.5cm',
+      bottom: '1.5cm',
+    },
+  };
+  const result = await axios.post('https://pdf.tago.io', { base64: Buffer.from(html).toString('base64'), options }).catch(context.log);
+  const pdf = result.data.result;
+
+  // Start the email service
+  const email = new Service(context.token).email;
+
+  // Pass to .send function the email addres, subject, body_msg, from and attachment.
+  // See the docs to know what is optional.
+  const email_address = env_vars.email;
+  const subject       = 'Exported File from Tago';
+  const body_msg      = 'This is an example of a body message';
+  const from          = 'tago@tago.io';
+  const attachment    = {
+    archive: pdf,
+    type: 'base64',
+    filename: 'exportedfile.pdf',
   };
 
-  // Now we use the filter for the device to get the data
-  // check if the variable min has any value
-  // if so, we crete a new object to send to Tago
-  const [min] = await device.find(minFilter);
-  if (min) {
-    const minValue = {
-      variable: 'temperature_minimum',
-      value: min.value,
-      unit: 'F',
-    };
-  
-    // now we insert the new object with the minimum value
-    await device.insert(minValue).then(context.log('Temperature Minimum Updated'));
-  } else {
-    context.log('Minimum value not found');
-  }
-
-  // This is a filter to get the maximum value of the variable temperature in the last day
-  const maxFilter = {
-    variable: 'temperature',
-    query: 'max',
-    start_date: '1 day',
-  };
-
-  const [max] = await device.find(maxFilter);
-  if (max) {
-    const maxValue = {
-        'variable': 'temperature_maximum',
-        'value': max.value,
-        'unit': 'F',
-    };
-    await device.insert(maxValue).then(context.log('Temperature Maximum Updated'));
-  } else {
-    context.log('Maximum value not found');
-  }
-
-  // This is a filter to get the last 1000 values of the variable temperature in the last day
-  const avgFilter = {
-    variable: 'temperature',
-    qty: 1000,
-    start_date: '1 day',
-  };
-
-  const avg = await device.find(avgFilter);
-  if (avg.length) {
-    let temperatureSum = avg.reduce((previewsValue, currentValue) => {
-      return previewsValue + Number(currentValue.value);
-    }, 0);
-  
-    temperatureSum = temperatureSum / avg.length;
-  
-    const avgValue = {
-      'variable': 'temperature_average',
-      'value': temperatureSum,
-      'unit': 'F',
-    };
-    await device.insert(avgValue).then(context.log('Temperature Average Updated'));
-  } else {
-    context.log('No result found for the avg calculation');
-  }
+  // Send the email.
+  await email.send(email_address, subject, body_msg, from, attachment).then(context.log);
 }
 
-module.exports = new Analysis(myAnalysis, 'MY-ANALYSIS-TOKEN-HERE');
+// The analysis token in only necessary to run the analysis outside Tago
+module.exports = new Analysis(myAnalysis, 'if-run-external-insert-the-analysis-token-here');

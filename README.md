@@ -1,10 +1,10 @@
 ## What this does
-Get Average, Minimum and Maximum value from a variable
+Get variable "temperature" from bucket and generate a pdf file to send via email.
 
 ## How to run the script on Tago
 Do your own modifications if you want.<br>
 Upload to Tago analysis, in the admin website.<br>
-Add the environment variable `device_token` with the device token of your choice.
+Add the environment variable `email` with an email.
 
 ## How to run the script from my computer
 Make sure you have npm and node installed in your machine.<br>
