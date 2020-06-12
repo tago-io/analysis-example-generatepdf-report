@@ -2,7 +2,6 @@
  * Analysis Example
  * Generate pdf report and send via email
  * 
- * Get the variable temperature from your device and generate a pdf report to send via email
  * 
  * Instructions
  * To run this analysis you need to add a email to the environment variables,

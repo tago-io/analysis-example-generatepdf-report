@@ -1,5 +1,5 @@
 ## What this does
-Get variable "temperature" from bucket and generate a pdf file to send via email.
+Generate a pdf file to send via email.
 
 ## How to run the script on Tago
 Do your own modifications if you want.<br>
