@@ -4,16 +4,37 @@
  * 
  * 
  * Instructions
- * To run this analysis you need to add a email to the environment variables,
+ * To run this analysis you need to add a email and device_token to the environment variables,
  * Go the the analysis, then environment variables, 
  * type email on key, and insert your email on value
+ * type device_token on key and insert your device token on value
 */
 
 const Analysis = require('tago/analysis');
+const TagoDevice = require('tago/device');
+const TagoAccount = require('tago/account');
 const Utils    = require('tago/utils');
 const Service  = require('tago/services');
 const axios    = require('axios');
 const moment   = require('moment-timezone');
+
+const your_variable = ''; //enter the variable from your device you would like in the report
+
+// The function myAnalysis will run when you execute your analysis
+async function myAnalysis(context) {
+  // reads the values from the environment and saves it in the variable env_vars
+  const env_vars = Utils.env_to_obj(context.environment);
+  if (!env_vars.email) return context.log('email environment variable not found');
+  const tago_device = new TagoDevice(env_vars.device_token);
+  if (!env_vars.device_token) return context.log('device_token environment variable not found');
+  const data = await tago_device.find({ variable: ['your_variable','unit'], start_date: '10 year', qty: 1 });
+  let dataParsed = 'variable,value,unit,time';
+  data.forEach((x) => {
+    dataParsed = `${x.variable},${x.value},${x.unit},${x.time}`;
+  });
+  const dataArray = dataParsed.split(',');
+  const dataVar = dataArray[0];
+  const dataVal = dataArray[1]; 
 
 const html = `<html>
   <head>
@@ -43,12 +64,12 @@ const html = `<html>
               <td colspan="3">Stop date: 2020-10-08 22:56:19</td>
           </tr>
           <tr>
-              <td colspan="4"> Report of the temperature</td>
+              <td colspan="4"> Report of the ${dataVar}</td>
               <td colspan="3">Device Kitchen Oven 5</td>
           </tr>
           <tr>
               <td>Counter</td>
-              <td>Temperature 1</td>
+              <td>${dataVar}</td>
               <td>Time</td>
               <td>Date</td>
               <td>Temperature 2</td>
@@ -58,7 +79,7 @@ const html = `<html>
 
           <tr>
           <td>2</td>
-          <td>120</td>
+          <td>${dataVal}</td>
           <td>10:53:20</td>
           <td>2020-06-10</td>
           <td>137</td>
@@ -71,11 +92,7 @@ const html = `<html>
   </body>
 </html>`;
 
-// The function myAnalysis will run when you execute your analysis
-async function myAnalysis(context) {
-  // reads the values from the environment and saves it in the variable env_vars
-  const env_vars = Utils.env_to_obj(context.environment);
-  if (!env_vars.email) return context.log('email environment variable not found');
+
 
   const options = {
     displayHeaderFooter: true,
@@ -111,3 +128,5 @@ async function myAnalysis(context) {
 
 // The analysis token in only necessary to run the analysis outside Tago
 module.exports = new Analysis(myAnalysis, 'if-run-external-insert-the-analysis-token-here');
+
+
