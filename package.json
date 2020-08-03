@@ -1,26 +1,15 @@
 {
-  "name": "analysis-example-avg_min_max",
-  "version": "1.0.0",
-  "description": "Get average, minimum and maximum value from a variable",
-  "main": "index.js",
-  "dependencies": {
-    "tago": "^6.1.0"
-  },
-  "devDependencies": {},
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/tago-io/analysis-example-avgMinMax.git"
-  },
-  "keywords": [
-    "tago"
-  ],
+  "name": "analysis-example-generatepdf-report",
+  "version": "1.0.1",
+  "private": true,
+  "description": "Generate a pdf file to send via email",
+  "main": "analysis.js",
+  "repository": "tago-io/analysis-example-simple",
   "author": "Tago LLC",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/tago-io/analysis-example-avgMinMax/issues"
-  },
-  "homepage": "https://github.com/tago-io/analysis-example-avgMinMax#readme"
+  "license": "MIT",
+  "dependencies": {
+    "@tago-io/sdk": "^10.0.0-beta.23",
+    "axios": "^0.19.2",
+    "moment-timezone": "^0.5.31"
+  }
 }
