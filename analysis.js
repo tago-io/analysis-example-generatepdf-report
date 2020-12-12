@@ -12,7 +12,7 @@
 
 const { Analysis, Device, Services, Utils } = require("@tago-io/sdk");
 const axios = require("axios");
-const moment = require("moment-timezone");
+const dayjs = require("dayjs");
 
 const your_variable = "your_variable"; //enter the variable from your device you would like in the report
 
@@ -68,7 +68,7 @@ async function myAnalysis(context) {
   <body>
     <table>
       <tr>
-          <td colspan="7">Issue date: ${moment().format("YYYY-MM-DD HH:mm:ss")}</td>
+          <td colspan="7">Issue date: ${dayjs().format("YYYY-MM-DD HH:mm:ss")}</td>
       </tr>
       <tr>
           <td colspan="4">Start date: 2020-05-20 10:21:32</td>
