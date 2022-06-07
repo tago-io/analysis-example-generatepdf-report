@@ -8,7 +8,7 @@
   "author": "Tago LLC",
   "license": "MIT",
   "dependencies": {
-    "@tago-io/sdk": "^10.0.0-beta.23",
+    "@tago-io/sdk": "^10.8.1",
     "axios": "^0.19.2",
     "moment-timezone": "^0.5.31"
   }

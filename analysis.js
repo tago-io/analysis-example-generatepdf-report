@@ -11,30 +11,28 @@
  */
 
 const { Analysis, Device, Services, Utils } = require("@tago-io/sdk");
-const axios = require("axios");
 const dayjs = require("dayjs");
 
 const your_variable = "your_variable"; //enter the variable from your device you would like in the report
 
 // The function myAnalysis will run when you execute your analysis
 async function myAnalysis(context) {
-  // reads the values from the environment and saves it in the variable env_vars
-  const env_vars = Utils.envToJson(context.environment);
+  // reads the values from the environment and saves it in the variable envVars
+  const envVars = Utils.envToJson(context.environment);
 
-  if (!env_vars.email) {
+  if (!envVars.email) {
     return context.log("email environment variable not found");
   }
-
-  if (!env_vars.device_token) {
+  if (!envVars.device_token) {
     return context.log("device_token environment variable not found");
   }
 
-  const device = new Device({ token: env_vars.device_token });
+  const device = new Device({ token: envVars.device_token });
 
   const data = await device.getData({
-    variable: [your_variable, "unit"],
-    start_date: "10 year",
-    qty: 1,
+    variables: [your_variable],
+    start_date: "1 month",
+    qty: 10,
   });
 
   let dataParsed = "variable,value,unit,time";
@@ -48,57 +46,57 @@ async function myAnalysis(context) {
   const dataVal = dataArray[1];
 
   const html = `<html>
-  <head>
-      <style>
-          body, html {
-              margin: 0;
-          }
-          table {
-              width: 100%;
-              border-collapse: collapse;
-          }
-          td {
-              border: 1px solid black;
-              padding: 5px;
-              padding-bottom: 25px;
-              font-style: italic;
-          }
-      </style>
-  </head>
-  <body>
-    <table>
-      <tr>
-          <td colspan="7">Issue date: ${dayjs().format("YYYY-MM-DD HH:mm:ss")}</td>
-      </tr>
-      <tr>
-          <td colspan="4">Start date: 2020-05-20 10:21:32</td>
-          <td colspan="3">Stop date: 2020-10-08 22:56:19</td>
-      </tr>
-      <tr>
-          <td colspan="4"> Report of the ${dataVar}</td>
-          <td colspan="3">Device Kitchen Oven 5</td>
-      </tr>
-      <tr>
-          <td>Counter</td>
-          <td>${dataVar}</td>
-          <td>Time</td>
-          <td>Date</td>
-          <td>Temperature 2</td>
-          <td>Time</td>
-          <td>Date</td>
-      </tr>
-      <tr>
-        <td>2</td>
-        <td>${dataVal}</td>
-        <td>10:53:20</td>
-        <td>2020-06-10</td>
-        <td>137</td>
-        <td>10:53:20</td>
-        <td>2020-06-10</td>
-      </tr>
-    </table>
-  </body>
-</html>`;
+    <head>
+        <style>
+            body, html {
+                margin: 0;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            td {
+                border: 1px solid black;
+                padding: 5px;
+                padding-bottom: 25px;
+                font-style: italic;
+            }
+        </style>
+    </head>
+    <body>
+      <table>
+        <tr>
+            <td colspan="7">Issue date: ${dayjs().format("YYYY-MM-DD HH:mm:ss")}</td>
+        </tr>
+        <tr>
+            <td colspan="4">Start date: 2020-05-20 10:21:32</td>
+            <td colspan="3">Stop date: 2020-10-08 22:56:19</td>
+        </tr>
+        <tr>
+            <td colspan="4"> Report of the ${dataVar}</td>
+            <td colspan="3">Device Kitchen Oven 5</td>
+        </tr>
+        <tr>
+            <td>Counter</td>
+            <td>${dataVar}</td>
+            <td>Time</td>
+            <td>Date</td>
+            <td>Temperature 2</td>
+            <td>Time</td>
+            <td>Date</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>${dataVal}</td>
+          <td>10:53:20</td>
+          <td>2020-06-10</td>
+          <td>137</td>
+          <td>10:53:20</td>
+          <td>2020-06-10</td>
+        </tr>
+      </table>
+    </body>
+  </html>`;
 
   const options = {
     displayHeaderFooter: true,
@@ -113,19 +111,24 @@ async function myAnalysis(context) {
   };
 
   const base64 = Buffer.from(html).toString("base64");
-  const result = await axios.post("https://pdf.tago.io", { base64, options });
-  const pdf = result.data.result;
+
+  // start the PDF service
+  const pdfService = new Services({ token: context.token }).PDF;
+  const pdf_base64 = await pdfService.generate({
+    base64,
+    options,
+  })
 
   // Start the email service
-  const email = new Services({ token: context.token }).email;
+  const emailService = new Services({ token: context.token }).email;
 
   // Send the email.
-  await email.send({
-    to: env_vars.email,
+  await emailService.send({
+    to: envVars.email,
     subject: "Exported File from TagoIO",
     message: "This is an example of a body message",
     attachment: {
-      archive: pdf,
+      archive: pdf_base64,
       type: "base64",
       filename: "exportedfile.pdf",
     },
