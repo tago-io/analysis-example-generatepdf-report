@@ -117,7 +117,7 @@ async function myAnalysis(context) {
   const pdf_base64 = await pdfService.generate({
     base64,
     options,
-  })
+  });
 
   // Start the email service
   const emailService = new Services({ token: context.token }).email;
@@ -128,7 +128,7 @@ async function myAnalysis(context) {
     subject: "Exported File from TagoIO",
     message: "This is an example of a body message",
     attachment: {
-      archive: pdf_base64,
+      archive: pdf_base64.result,
       type: "base64",
       filename: "exportedfile.pdf",
     },
