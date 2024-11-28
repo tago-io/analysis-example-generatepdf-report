@@ -16,7 +16,7 @@ const dayjs = require("dayjs");
 const your_variable = "your_variable"; //enter the variable from your device you would like in the report
 
 // The function myAnalysis will run when you execute your analysis
-async function myAnalysis(context) {
+async function startAnalysis(context) {
   // reads the values from the environment and saves it in the variable envVars
   const envVars = Utils.envToJson(context.environment);
 
@@ -135,7 +135,7 @@ async function myAnalysis(context) {
   });
 }
 
-module.exports = new Analysis(myAnalysis);
+Analysis.use(startAnalysis);
 
 // To run analysis on your machine (external)
-// module.exports = new Analysis(myAnalysis, { token: "YOUR-TOKEN" });
+// Analysis.use(myAnalysis, { token: "YOUR-TOKEN" });
